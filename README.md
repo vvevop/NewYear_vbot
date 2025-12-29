@@ -8,9 +8,7 @@
     ```
 2. Подготовьте файлы конфигурации:
 
-    Переименуйте bot_token_example.py в bot_token.py и вставьте ваш токен от @BotFather.
-
-    Переименуйте config_example.py в config.py и укажите ваш Telegram ID в ADMIN_IDS.
+    Переименуйте config_example.py в config.py, вставьте в BOT_TOKEN ваш токен от @BotFather и укажите ваш Telegram ID в MY_ID и ADMIN_IDS
 
 3. Запустите бота:
     ```bash
