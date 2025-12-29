@@ -9,17 +9,15 @@ import logging, asyncio
     
 from datetime import datetime
 import pymorphy3
-import hashlib
 
-from bot_token import TOKEN
-from config import ADMIN_IDS, MY_ID
+from config import BOT_TOKEN, ADMIN_IDS, MY_ID
 
 VERSION = "1.0.0"
 
 logging.basicConfig(level=logging.INFO)
 
 bot = Bot(
-    token=TOKEN,
+    token=BOT_TOKEN,
     default=DefaultBotProperties(
 
     )
