@@ -1,0 +1,9 @@
+bot_token.py
+config.py
+__pycache__/ 
+
+*.db
+*.sqlite3
+
+venv/
+.venv/

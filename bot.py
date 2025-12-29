@@ -11,9 +11,10 @@ from datetime import datetime
 import pymorphy3
 import hashlib
 
-
 from bot_token import TOKEN
-from config import my_id
+from config import ADMIN_IDS, MY_ID
+
+VERSION = "1.0.0"
 
 logging.basicConfig(level=logging.INFO)
 
@@ -34,11 +35,11 @@ async def get_password_async(message: types.Message):
     chat_id = message.chat.id
     username = message.chat.username
 
-    if chat_id == my_id:
+    if chat_id in ADMIN_IDS:
         123
     else:
         await message.answer("Недостаточно прав для доступа к боту 😇 \n\n" "<blockquote>Разработчик: @beaitch</blockquote>", parse_mode='HTML')
-        await bot.send_message(chat_id = my_id, text = f"@{username} <code>{chat_id}</code> пытался получить доступ к боту\n" "#новый", parse_mode='HTML')
+        await bot.send_message(chat_id = MY_ID, text = f"@{username} <code>{chat_id}</code> пытался получить доступ к боту\n" "#новый", parse_mode='HTML')
 
 morph = pymorphy3.MorphAnalyzer()
 
@@ -49,61 +50,49 @@ def format_time(number, word_str):
     agreed = word.make_agree_with_number(number).word
     return f"{number} {agreed}"
 
+def get_time_to_new_yearr():
+    
+    current_datetime = datetime.now()
+    
+    new_year = datetime(current_datetime.year + 1, 1, 1, 0, 0, 0)
+
+    current_datetime = datetime.now()
+    time_difference = new_year - current_datetime
+    total_s_left = time_difference.total_seconds()
+
+    d = total_s_left // 86400
+    total_s_left %= 86400
+
+    h = total_s_left // 3600
+    total_s_left %= 3600
+
+    m = total_s_left // 60
+    total_s_left %= 60
+
+    s = total_s_left
+
+    d = int(d)
+    h = int(h)
+    m = int(m)
+    s = int(s)
+
+    return d, h, m, s
+
 ############################################################################################################################################
 
 @dp.message(Command("start"))
 async def start(message: types.Message):
 
-    new_year = datetime(2026, 1, 1, 0, 0, 0)
+    d, h, m, s = get_time_to_new_yearr()
 
-    current_datetime = datetime.now()
-    time_difference = new_year - current_datetime
-    total_seconds_left = time_difference.total_seconds()
-
-    days = total_seconds_left // 86400
-    total_seconds_left %= 86400
-
-    hours = total_seconds_left // 3600
-    total_seconds_left %= 3600
-
-    minutes = total_seconds_left // 60
-    total_seconds_left %= 60
-
-    seconds = total_seconds_left
-
-    days = int(days)
-    hours = int(hours)
-    minutes = int(minutes)
-    seconds = int(seconds)
-
-    await message.answer(f"🎄 До нового года: \n" f"<blockquote><b>{format_time(days, 'день')} {format_time(hours, 'час')} {format_time(minutes, 'минута')} {format_time(seconds, 'секунда')}</b></blockquote>", parse_mode='HTML')
+    await message.answer(f"🎄 До нового года: \n" f"<blockquote><b>{format_time(d, 'день')} {format_time(h, 'час')} {format_time(m, 'минута')} {format_time(s, 'секунда')}</b></blockquote>", parse_mode='HTML')
 
 ######################################################################
 
 @router.inline_query()
 async def query_handler(inline_query: InlineQuery):
     
-    new_year = datetime(2026, 1, 1, 0, 0, 0)
-
-    current_datetime = datetime.now()
-    time_difference = new_year - current_datetime
-    total_seconds_left = time_difference.total_seconds()
-
-    days = total_seconds_left // 86400
-    total_seconds_left %= 86400
-
-    hours = total_seconds_left // 3600
-    total_seconds_left %= 3600
-
-    minutes = total_seconds_left // 60
-    total_seconds_left %= 60
-
-    seconds = total_seconds_left
-
-    days = int(days)
-    hours = int(hours)
-    minutes = int(minutes)
-    seconds = int(seconds)
+    d, h, m, s = get_time_to_new_yearr()
     
     results = [
         InlineQueryResultArticle(
@@ -111,7 +100,7 @@ async def query_handler(inline_query: InlineQuery):
             title="🎄 Cколько осталось до нового года?", 
             description="Нажми сюда, чтобы узнать",
             input_message_content=InputTextMessageContent(
-                message_text = f"🎄 До нового года: \n" f"<blockquote><b>{format_time(days, 'день')} {format_time(hours, 'час')} {format_time(minutes, 'минута')} {format_time(seconds, 'секунда')}</b></blockquote>", parse_mode='HTML'
+                message_text = f"🎄 До нового года: \n" f"<blockquote><b>{format_time(d, 'день')} {format_time(h, 'час')} {format_time(m, 'минута')} {format_time(s, 'секунда')}</b></blockquote>", parse_mode='HTML'
             )
         )
     ]
