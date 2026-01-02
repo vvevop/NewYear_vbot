@@ -10,9 +10,7 @@ import logging, asyncio
 from datetime import datetime
 import pymorphy3
 
-from config import BOT_TOKEN, ADMIN_IDS, MY_ID
-
-VERSION = "1.0.0"
+from config import BOT_TOKEN, ADMIN_IDS, MY_ID, BOT_VERSION
 
 logging.basicConfig(level=logging.INFO)
 
@@ -109,6 +107,7 @@ async def query_handler(inline_query: InlineQuery):
 
 async def main():
     dp.include_router(router)
+    
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
