@@ -1,3 +1,5 @@
+[🇷🇺 Русская версия](https://github.com/vvevop/NewYear_vbot/blob/main/README_ru.md)
+
 # 🎄 New Year vbot
 
 ![Version](https://img.shields.io/badge/Version-v1.0-blue) ![Python](https://img.shields.io/badge/Python-3.8%2B-blue) ![Aiogram](https://img.shields.io/badge/Aiogram-3.x-blueviolet) ![License](https://img.shields.io/badge/License-MIT-green)
