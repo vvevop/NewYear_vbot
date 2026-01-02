@@ -107,6 +107,8 @@ async def query_handler(inline_query: InlineQuery):
 
 async def main():
     dp.include_router(router)
+
+    await bot.delete_webhook(drop_pending_updates=True)
     
     await dp.start_polling(bot)
 
