@@ -1,4 +1,4 @@
-[🇬🇧 English version](https://github.com/vvevop/NewYear_vbot/blob/main/README.md)
+[🇺🇸 English version](https://github.com/vvevop/NewYear_vbot/blob/main/README.md)
 
 # 🎄 New Year vbot 
 
