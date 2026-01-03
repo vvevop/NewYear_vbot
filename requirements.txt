@@ -1,2 +1,3 @@
 aiogram
 pymorphy3
+python-dotenv
