@@ -2,7 +2,7 @@
 
 # 🎄 New Year vbot
 
-![Version](https://img.shields.io/badge/Version-v1.0.1-blue) ![Python](https://img.shields.io/badge/Python-3.8%2B-blue) ![Aiogram](https://img.shields.io/badge/Aiogram-3.x-blueviolet) ![License](https://img.shields.io/badge/License-MIT-green)
+![Version](https://img.shields.io/badge/Version-v1.1.1-blue) ![Python](https://img.shields.io/badge/Python-3.8%2B-blue) ![Aiogram](https://img.shields.io/badge/Aiogram-3.x-blueviolet) ![License](https://img.shields.io/badge/License-MIT-green)
 
 A Telegram bot that shows the exact time remaining until the New Year. The bot supports correct word declension (days, hours, minutes) and works in **inline mode** for use in any chat.
 

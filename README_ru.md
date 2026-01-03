@@ -2,7 +2,7 @@
 
 # 🎄 New Year vbot 
 
-![Version](https://img.shields.io/badge/Version-v1.0.1-blue) ![Python](https://img.shields.io/badge/Python-3.8%2B-blue) ![Aiogram](https://img.shields.io/badge/Aiogram-3.x-blueviolet) ![License](https://img.shields.io/badge/License-MIT-green)
+![Version](https://img.shields.io/badge/Version-v1.1.1-blue) ![Python](https://img.shields.io/badge/Python-3.8%2B-blue) ![Aiogram](https://img.shields.io/badge/Aiogram-3.x-blueviolet) ![License](https://img.shields.io/badge/License-MIT-green)
 
 Телеграм-бот, который показывает точное время, оставшееся до наступления Нового года. Бот поддерживает правильное склонение слов (дни, часы, минуты) и работает в **инлайн-режиме** для использования в любых чатах.
 
