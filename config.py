@@ -5,6 +5,8 @@ load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
+HEARTBEAT_URL = os.getenv("HEARTBEAT_URL")
+
 admin_ids_str = os.getenv("ADMIN_IDS")
 if admin_ids_str:
     ADMIN_IDS = [int(id_str) for id_str in admin_ids_str.split(",")]

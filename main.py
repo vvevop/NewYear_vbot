@@ -14,8 +14,9 @@ import logging, asyncio
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import pymorphy3
+import aiohttp
 
-from config import BOT_TOKEN, ADMIN_IDS, MY_ID, BOT_VERSION
+from config import BOT_TOKEN, ADMIN_IDS, MY_ID, BOT_VERSION, HEARTBEAT_URL
 
 logging.basicConfig(level=logging.INFO)
 
@@ -113,10 +114,36 @@ async def query_handler(inline_query: InlineQuery):
     ]
     
     await inline_query.answer(results=results, cache_time=0)
+
+async def heartbeat_task(url: str, interval: int = 60):
+    """Асинхронная функция для пинга Better Stack"""
+    print(f"[Heartbeat] Фоновая задача запущена. Интервал: {interval}с")
     
+    # Создаем одну сессию для всех запросов (эффективнее)
+    async with aiohttp.ClientSession() as session:
+        while True:
+            try:
+                async with session.get(url, timeout=10) as response:
+                    if response.status == 200:
+                        logging.info(f"Heartbeat отправлен! Статус: {response.status}")
+                    else:
+                        logging.warning(f"Ошибка Heartbeat! Статус: {response.status}")
+            except Exception as e:
+                logging.error(f"Ошибка при пинге Heartbeat: {e}")
+            
+            # Важно: используем асинхронный сон, который не блокирует бота
+            await asyncio.sleep(interval)
+
+async def on_startup(bot: Bot):
+    """Эта функция выполнится при запуске бота"""
+    # Запускаем фоновую задачу
+    asyncio.create_task(heartbeat_task(HEARTBEAT_URL, 60))
 
 async def main():
     dp.include_router(router)
+
+    # Регистрируем функцию, которая запустится при старте
+    dp.startup.register(on_startup)
 
     await bot.delete_webhook(drop_pending_updates=True)
     
