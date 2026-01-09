@@ -9,9 +9,8 @@ from aiogram.types import (
 from aiogram.filters import Command, CommandObject
 from aiogram import Router
 from aiogram.exceptions import TelegramBadRequest
-from contextlib import suppress
+
 import logging, asyncio
-    
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import pymorphy3
@@ -30,7 +29,6 @@ bot = Bot(
 dp = Dispatcher()
 router = Router()
 
-############################################################################################################################################
 
 @dp.message(Command("---"))
 async def plug(message: types.Message):
@@ -44,7 +42,6 @@ async def plug(message: types.Message):
     
     123
 
-######################################################################
 
 morph = pymorphy3.MorphAnalyzer()
 
@@ -54,7 +51,6 @@ def format_time(number, word_str):
     agreed = word.make_agree_with_number(number).word
     return f"{number} {agreed}"
 
-######################################################################
 
 def get_time_to_new_yearr():
     
@@ -83,16 +79,12 @@ def get_time_to_new_yearr():
 
     return d, h, m, s
 
-############################################################################################################################################
-
 @dp.message(Command("start"))
 async def start(message: types.Message):
 
     d, h, m, s = get_time_to_new_yearr()
 
     await message.answer(f"🎄 До нового года: \n" f"<blockquote><b>{format_time(d, 'день')} {format_time(h, 'час')} {format_time(m, 'минута')} {format_time(s, 'секунда')}</b></blockquote>", parse_mode='HTML')
-
-######################################################################
 
 @dp.message(Command("version"))
 async def version(message: types.Message):
@@ -103,8 +95,6 @@ async def version(message: types.Message):
         return
     
     await message.answer(f"🤖 Я работаю на версии <b>{BOT_VERSION}</b>", parse_mode='HTML')
-
-######################################################################
 
 @router.inline_query()
 async def query_handler(inline_query: InlineQuery):
@@ -123,8 +113,7 @@ async def query_handler(inline_query: InlineQuery):
     ]
     
     await inline_query.answer(results=results, cache_time=0)
-
-############################################################################################################################################
+    
 
 async def main():
     dp.include_router(router)
