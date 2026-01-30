@@ -16,7 +16,7 @@ else:
 my_id_str = os.getenv("MY_ID")
 MY_ID = int(my_id_str) if my_id_str else None
 
-BOT_VERSION = "1.1.1"
+BOT_VERSION = "1.1.2"
 
 if not BOT_TOKEN:
     raise ValueError("Переменная BOT_TOKEN не установлена в файле .env!")

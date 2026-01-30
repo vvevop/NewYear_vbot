@@ -23,7 +23,7 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(
     token=BOT_TOKEN,
     default=DefaultBotProperties(
-
+        parse_mode='HTML'
     )
 )
 
@@ -37,8 +37,8 @@ async def plug(message: types.Message):
     username = message.chat.username
 
     if chat_id not in ADMIN_IDS:
-        await message.answer("Недостаточно прав для доступа к боту 😇 \n\n" "<blockquote>Разработчик: @beaitch</blockquote>", parse_mode='HTML')
-        await bot.send_message(chat_id = MY_ID, text = f"@{username} <code>{chat_id}</code> пытался получить доступ к боту\n" "#новый", parse_mode='HTML')
+        await message.answer("Недостаточно прав для доступа к боту 😇 \n\n" "<blockquote>Разработчик: @beaitch</blockquote>")
+        await bot.send_message(chat_id = MY_ID, text = f"@{username} <code>{chat_id}</code> пытался получить доступ к боту\n" "#новый")
         return
     
     123
@@ -52,19 +52,12 @@ def format_time(number, word_str):
     agreed = word.make_agree_with_number(number).word
     return f"{number} {agreed}"
 
-
 def get_time_to_new_yearr():
     
-    # Задаем часовой пояс Москвы
     msk_tz = ZoneInfo("Europe/Moscow")
-    
-    # Получаем текущее время сразу в МСК
     current_datetime = datetime.now(msk_tz)
-    
-    # Создаем дату Нового года, УКАЗЫВАЯ тот же часовой пояс (tzinfo=msk_tz)
     new_year = datetime(current_datetime.year + 1, 1, 1, 0, 0, 0, tzinfo=msk_tz)
     
-    # Вычитаем (теперь обе даты знают свой часовой пояс)
     time_difference = new_year - current_datetime
     total_s_left = time_difference.total_seconds()
 
@@ -80,12 +73,19 @@ def get_time_to_new_yearr():
 
     return d, h, m, s
 
+PREMIUM_TREE_EMOJI_ID = "4958563601775330153"
+
 @dp.message(Command("start"))
 async def start(message: types.Message):
 
     d, h, m, s = get_time_to_new_yearr()
 
-    await message.answer(f"🎄 До нового года: \n" f"<blockquote><b>{format_time(d, 'день')} {format_time(h, 'час')} {format_time(m, 'минута')} {format_time(s, 'секунда')}</b></blockquote>", parse_mode='HTML')
+    text = (
+        f'<tg-emoji emoji-id="{PREMIUM_TREE_EMOJI_ID}">🎄</tg-emoji> До нового года: \n'
+        f"<blockquote><b>{format_time(d, 'день')} {format_time(h, 'час')} {format_time(m, 'минута')} {format_time(s, 'секунда')}</b></blockquote>"
+    )
+
+    await message.answer(text)
 
 @dp.message(Command("version"))
 async def version(message: types.Message):
@@ -95,12 +95,17 @@ async def version(message: types.Message):
     if chat_id not in ADMIN_IDS:
         return
     
-    await message.answer(f"🤖 Я работаю на версии <b>{BOT_VERSION}</b>", parse_mode='HTML')
+    await message.answer(f"🤖 Я работаю на версии <b>{BOT_VERSION}</b>")
 
 @router.inline_query()
 async def query_handler(inline_query: InlineQuery):
     
     d, h, m, s = get_time_to_new_yearr()
+
+    text = (
+        f'<tg-emoji emoji-id="{PREMIUM_TREE_EMOJI_ID}">🎄</tg-emoji> До нового года: \n'
+        f"<blockquote><b>{format_time(d, 'день')} {format_time(h, 'час')} {format_time(m, 'минута')} {format_time(s, 'секунда')}</b></blockquote>"
+    )
     
     results = [
         InlineQueryResultArticle(
@@ -108,7 +113,7 @@ async def query_handler(inline_query: InlineQuery):
             title="🎄 Cколько осталось до нового года?", 
             description="Нажми сюда, чтобы узнать",
             input_message_content=InputTextMessageContent(
-                message_text = f"🎄 До нового года: \n" f"<blockquote><b>{format_time(d, 'день')} {format_time(h, 'час')} {format_time(m, 'минута')} {format_time(s, 'секунда')}</b></blockquote>", parse_mode='HTML'
+                message_text = text
             )
         )
     ]
