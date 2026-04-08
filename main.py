@@ -4,11 +4,12 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.types import (
     InlineQuery, InlineQueryResultArticle, InputTextMessageContent,
-    InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+    ChosenInlineResult
 )
-from aiogram.filters import Command, CommandObject
+from aiogram.filters import Command
 from aiogram import Router
-from aiogram.exceptions import TelegramBadRequest
+from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.fsm.context import FSMContext
 
 import logging, asyncio
 from datetime import datetime
@@ -40,8 +41,6 @@ async def plug(message: types.Message):
         await message.answer("Недостаточно прав для доступа к боту 😇 \n\n" "<blockquote>Разработчик: @beaitch</blockquote>")
         await bot.send_message(chat_id = MY_ID, text = f"@{username} <code>{chat_id}</code> пытался получить доступ к боту\n" "#новый")
         return
-    
-    123
 
 
 morph = pymorphy3.MorphAnalyzer()
@@ -75,17 +74,26 @@ def get_time_to_new_yearr():
 
 PREMIUM_TREE_EMOJI_ID = "4958563601775330153"
 
-@dp.message(Command("start"))
-async def start(message: types.Message):
+def get_update_keyboard():
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Обновить", callback_data="update_time")
+    return kb.as_markup()
 
+def get_new_year_text():
     d, h, m, s = get_time_to_new_yearr()
 
     text = (
         f'<tg-emoji emoji-id="{PREMIUM_TREE_EMOJI_ID}">🎄</tg-emoji> До нового года: \n'
         f"<blockquote><b>{format_time(d, 'день')} {format_time(h, 'час')} {format_time(m, 'минута')} {format_time(s, 'секунда')}</b></blockquote>"
     )
+    return text
 
-    await message.answer(text)
+@dp.message(Command("start"))
+async def start(message: types.Message):
+
+    text = get_new_year_text()
+
+    await message.answer(text, reply_markup=get_update_keyboard())
 
 @dp.message(Command("version"))
 async def version(message: types.Message):
@@ -99,26 +107,75 @@ async def version(message: types.Message):
 
 @router.inline_query()
 async def query_handler(inline_query: InlineQuery):
-    
-    d, h, m, s = get_time_to_new_yearr()
 
-    text = (
-        f'<tg-emoji emoji-id="{PREMIUM_TREE_EMOJI_ID}">🎄</tg-emoji> До нового года: \n'
-        f"<blockquote><b>{format_time(d, 'день')} {format_time(h, 'час')} {format_time(m, 'минута')} {format_time(s, 'секунда')}</b></blockquote>"
-    )
-    
-    results = [
+    kb = InlineKeyboardBuilder()
+    kb.button(text="ㅤ", callback_data="ㅤ")
+
+    results = [ 
         InlineQueryResultArticle(
-            id="1",
+            id="trea",
             title="🎄 Cколько осталось до нового года?", 
             description="Нажми сюда, чтобы узнать",
             input_message_content=InputTextMessageContent(
-                message_text = text
-            )
+                message_text = "⁡",
+                parse_mode="HTML"
+            ),
+            reply_markup=kb.as_markup()
         )
     ]
     
     await inline_query.answer(results=results, cache_time=0)
+
+@router.chosen_inline_result()
+async def inline_resulter(call: ChosenInlineResult, state: FSMContext):
+    await state.clear()
+
+    if not call.inline_message_id:
+        return
+    
+    text = get_new_year_text()
+
+    if call.result_id == "trea":
+        try:
+            await call.bot.edit_message_text(
+                inline_message_id=call.inline_message_id,
+                text=text,
+                parse_mode="HTML",
+                reply_markup=get_update_keyboard()
+            )
+        except Exception as e:
+            print(f"Ошибка редактирования: {e}")
+
+
+@dp.callback_query(F.data == "update_time")
+async def update_time_callback_handler(callback_query: types.CallbackQuery):
+    """
+    Обрабатывает нажатие на кнопку "Обновить", обновляя время в сообщении.
+    """
+    new_text = get_new_year_text()
+    
+    try:
+        if callback_query.inline_message_id:
+            # Если это инлайн-сообщение
+            await bot.edit_message_text(
+                inline_message_id=callback_query.inline_message_id,
+                text=new_text,
+                reply_markup=get_update_keyboard()
+            )
+        elif callback_query.message:
+            # Если это обычное сообщение
+            await callback_query.message.edit_text(
+                text=new_text,
+                reply_markup=get_update_keyboard()
+            )
+        
+        # Отправляем подтверждение, что колбэк обработан
+        await callback_query.answer("Время обновлено!")
+
+    except Exception as e:
+        # В случае ошибки (например, сообщение слишком старое)
+        logging.error(f"Ошибка при обновлении времени: {e}")
+        await callback_query.answer("Не удалось обновить время.", show_alert=True)
 
 async def heartbeat_task(url: str, interval: int = 60):
     """Асинхронная функция для пинга Better Stack"""
@@ -138,7 +195,7 @@ async def heartbeat_task(url: str, interval: int = 60):
             
             # Важно: используем асинхронный сон, который не блокирует бота
             await asyncio.sleep(interval)
-
+    
 async def on_startup(bot: Bot):
     """Эта функция выполнится при запуске бота"""
     # Запускаем фоновую задачу
